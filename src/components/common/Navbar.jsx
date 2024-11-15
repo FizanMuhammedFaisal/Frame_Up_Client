@@ -42,7 +42,7 @@ const products = [
 const navbarData = [
   { name: "Collections", href: "/all", icon: ShoppingBagIcon },
   { name: "Home", href: "/", icon: HomeIcon },
-  { name: "Artists", href: "/about-us", icon: UserGroupIcon },
+  { name: "Artists", href: "/artists", icon: UserGroupIcon },
 ];
 
 const MLogo = React.memo(Logo);
@@ -316,7 +316,6 @@ export default function Navbar() {
 }
 
 function MobileBottomBar({ items }) {
-  const navigate = useNavigate();
   const location = useLocation();
 
   const bottomBarItems = [

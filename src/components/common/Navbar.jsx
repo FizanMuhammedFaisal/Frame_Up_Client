@@ -10,11 +10,16 @@ import {
   ShoppingBagIcon,
 } from "@heroicons/react/24/outline";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { HeartIcon, UserIcon } from "lucide-react";
 import Logo from "./Animations/Logo";
 import AccountNavbar from "../common/AccountNavbar";
 import SearchBar from "./SearchBar.jsx";
+import { logoutUser } from "../../redux/slices/authSlice";
+import apiClient from "../../services/api/apiClient.js";
+import { clearCart } from "../../redux/slices/Users/Cart/cartSlice.js";
+import { clearWishlist } from "../../redux/slices/Users/Wishlist/wishlistSlice.js";
+import { toast } from "sonner";
 
 const products = [
   {
@@ -49,11 +54,21 @@ export default function Navbar() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const navigate = useNavigate();
   const { items } = useSelector((state) => state.cart);
-
+  const dispatch = useDispatch();
   const handleScroll = useCallback(() => {
     setIsScrolled(window.scrollY > 50);
   }, []);
-
+  const handleLogout = async () => {
+    const res = await apiClient.get("api/users/logout", {
+      withCredentials: true,
+    });
+    if (res.status === 200) {
+      dispatch(clearCart());
+      dispatch(clearWishlist());
+      dispatch(logoutUser());
+      toast.success("Logout Successfull");
+    }
+  };
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -84,7 +99,7 @@ export default function Navbar() {
     closed: { x: 20, opacity: 0 },
     open: { x: 0, opacity: 1 },
   };
-
+  const { isAuthenticated } = useSelector((state) => state.auth);
   return (
     <header
       className={`fixed w-full z-50 transition-all duration-300 ${
@@ -271,15 +286,24 @@ export default function Navbar() {
                       </Link>
                     ))}
                   </div>
-                  <div className="py-6">
-                    <Link
-                      to="/login"
+                  {isAuthenticated ? (
+                    <div
                       className="block rounded-lg py-2.5 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => handleLogout()}
                     >
-                      Log in
-                    </Link>
-                  </div>
+                      Log out
+                    </div>
+                  ) : (
+                    <div className="py-6">
+                      <Link
+                        to="/login"
+                        className="block rounded-lg py-2.5 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Log in
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

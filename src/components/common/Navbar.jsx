@@ -340,12 +340,14 @@ function MobileBottomBar({ items }) {
             }`}
           >
             <item.icon className="h-6 w-6" />
-            <span className="text-xs mt-1">{item.name}</span>
-            {item.badge > 0 && (
-              <span className="absolute top-2 right-1/2 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                {item.badge}
-              </span>
-            )}
+
+            {/* Display item name and conditionally show item count next to "Cart" */}
+            <span className="text-xs mt-1">
+              {item.name}
+              {item.name === "Cart" && item.badge > 0 && (
+                <span className="ml-1">({item.badge})</span>
+              )}
+            </span>
           </Link>
         ))}
       </div>

@@ -106,7 +106,7 @@ export default function Navbar() {
         isScrolled ? "bg-customColorPrimary shadow-md" : "bg-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-8">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between py-1 lg:py-3 px-3 lg:px-8">
         <div className="flex mb-1 lg:flex-1">
           <MLogo />
         </div>

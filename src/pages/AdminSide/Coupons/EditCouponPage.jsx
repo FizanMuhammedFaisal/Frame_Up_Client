@@ -4,15 +4,17 @@ import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../../services/api/apiClient";
 import Spinner from "../../../components/common/Animations/Spinner";
+import { validateCouponEdit } from "../../../utils/validation/FormValidation.js";
 
 export default function CouponEdit() {
   const { couponId } = useParams();
   const [coupon, setCoupon] = useState(null);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const fetchCoupon = async () => {
-    const res = await apiClient.get(`/api/admin/coupons/${couponId}`);
+    const res = await apiClient.get(`/api/coupons/${couponId}`);
+    console.log(res.data);
     return res.data.coupon;
   };
 
@@ -29,26 +31,32 @@ export default function CouponEdit() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCoupon((prev) => (prev ? { ...prev, [name]: value } : null));
+    setCoupon((prev) => {
+      const updatedCoupon = prev ? { ...prev, [name]: value } : null;
+      validateField(name, updatedCoupon);
+      return updatedCoupon;
+    });
+  };
+
+  const validateField = (fieldName, updatedCoupon) => {
+    const error = validateCouponEdit({
+      ...updatedCoupon,
+      [fieldName]: updatedCoupon[fieldName],
+    });
+    setErrors((prev) => ({ ...prev, [fieldName]: error }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !coupon ||
-      !coupon.code ||
-      !coupon.discountType ||
-      !coupon.discountValue ||
-      !coupon.expirationDate
-    ) {
-      setError("All fields are required");
+    const validationError = validateCouponEdit(coupon);
+    if (validationError) {
+      setErrors((prev) => ({ ...prev, form: validationError }));
       return;
     }
+    setErrors({});
 
     try {
-      setError("");
-      await apiClient.put(`/api/admin/coupons/update/${couponId}`, coupon);
-
+      await apiClient.put(`/api/coupons/update/${couponId}`, coupon);
       toast.success("Coupon Updated");
       setCoupon(null);
       navigate("/dashboard/coupons");
@@ -58,11 +66,11 @@ export default function CouponEdit() {
         const errorMessages = err.response.data.errors
           .map((error) => error.msg)
           .join(", ");
-        setError(errorMessages);
+        setErrors((prev) => ({ ...prev, form: errorMessages }));
       } else if (err.response && err.response.data.message) {
-        setError(err.response.data.message);
+        setErrors((prev) => ({ ...prev, form: err.response.data.message }));
       } else {
-        setError("An error occurred");
+        setErrors((prev) => ({ ...prev, form: "An error occurred" }));
       }
     }
   };
@@ -87,10 +95,10 @@ export default function CouponEdit() {
         Edit Coupon
       </h1>
 
-      {error && (
+      {errors.form && (
         <div className="dark:bg-customP2BackgroundD bg-red-100 dark:border-customP2ForegroundD_600 border bg-customP2ForeGroundW_500 py-2 mb-4 rounded-lg">
           <p className="text-red-900 dark:text-red-500 ms-4 text-start">
-            {error}
+            {errors.form}
           </p>
         </div>
       )}
@@ -112,6 +120,9 @@ export default function CouponEdit() {
             placeholder="Enter coupon code"
             className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-customP2Primary focus:border-customP2Primary dark:border-customP2ForegroundD_400 dark:bg-customP2BackgroundD_darkest sm:text-sm dark:text-slate-50"
           />
+          {errors.code && (
+            <p className="text-red-500 text-sm mt-1">{errors.code}</p>
+          )}
         </div>
 
         <div className="form-group">
@@ -119,7 +130,7 @@ export default function CouponEdit() {
             htmlFor="discountType"
             className="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-200"
           >
-            Discount Type:
+            Discount Type
           </label>
           <select
             id="discountType"
@@ -132,60 +143,146 @@ export default function CouponEdit() {
             <option value="percentage">Percentage</option>
             <option value="fixed">Fixed Amount</option>
           </select>
+          {errors.discountType && (
+            <p className="text-red-500 text-sm mt-1">{errors.discountType}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label
-            htmlFor="discountValue"
+            htmlFor="discountAmount"
             className="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-200"
           >
-            Discount Value:
+            Discount Amount
           </label>
           <input
             type="number"
-            id="discountValue"
-            name="discountValue"
-            value={coupon?.discountValue || ""}
+            id="discountAmount"
+            name="discountAmount"
+            value={coupon?.discountAmount || ""}
             onChange={handleInputChange}
-            placeholder="Enter discount value"
+            placeholder="Enter discount amount"
             className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-customP2Primary focus:border-customP2Primary dark:border-customP2ForegroundD_400 dark:bg-customP2BackgroundD_darkest sm:text-sm dark:text-slate-50"
           />
+          {errors.discountAmount && (
+            <p className="text-red-500 text-sm mt-1">{errors.discountAmount}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label
-            htmlFor="expirationDate"
+            htmlFor="maxDiscountAmount"
             className="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-200"
           >
-            Expiration Date:
+            Max Discount Amount
           </label>
           <input
-            type="date"
-            id="expirationDate"
-            name="expirationDate"
+            type="number"
+            id="maxDiscountAmount"
+            name="maxDiscountAmount"
+            value={coupon?.maxDiscountAmount || ""}
+            onChange={handleInputChange}
+            placeholder="Enter max discount amount"
+            className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-customP2Primary focus:border-customP2Primary dark:border-customP2ForegroundD_400 dark:bg-customP2BackgroundD_darkest sm:text-sm dark:text-slate-50"
+          />
+          {errors.maxDiscountAmount && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.maxDiscountAmount}
+            </p>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="minPurchaseAmount"
+            className="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-200"
+          >
+            Min Purchase Amount
+          </label>
+          <input
+            type="number"
+            id="minPurchaseAmount"
+            name="minPurchaseAmount"
+            value={coupon?.minPurchaseAmount || ""}
+            onChange={handleInputChange}
+            placeholder="Enter min purchase amount"
+            className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-customP2Primary focus:border-customP2Primary dark:border-customP2ForegroundD_400 dark:bg-customP2BackgroundD_darkest sm:text-sm dark:text-slate-50"
+          />
+          {errors.minPurchaseAmount && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.minPurchaseAmount}
+            </p>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="validFrom"
+            className="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-200"
+          >
+            Valid From
+          </label>
+          <input
+            type="datetime-local"
+            id="validFrom"
+            name="validFrom"
             value={
-              coupon?.expirationDate ? coupon.expirationDate.split("T")[0] : ""
+              coupon?.validFrom
+                ? new Date(coupon.validFrom).toISOString().slice(0, 16)
+                : ""
             }
             onChange={handleInputChange}
             className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-customP2Primary focus:border-customP2Primary dark:border-customP2ForegroundD_400 dark:bg-customP2BackgroundD_darkest sm:text-sm dark:text-slate-50"
           />
+          {errors.validFrom && (
+            <p className="text-red-500 text-sm mt-1">{errors.validFrom}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label
-            htmlFor="description"
+            htmlFor="validTill"
             className="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-200"
           >
-            Description:
+            Valid Till
           </label>
-          <textarea
-            id="description"
-            name="description"
-            value={coupon?.description || ""}
+          <input
+            type="datetime-local"
+            id="validTill"
+            name="validTill"
+            value={
+              coupon?.validTill
+                ? new Date(coupon.validTill).toISOString().slice(0, 16)
+                : ""
+            }
             onChange={handleInputChange}
-            placeholder="Enter coupon description"
             className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-customP2Primary focus:border-customP2Primary dark:border-customP2ForegroundD_400 dark:bg-customP2BackgroundD_darkest sm:text-sm dark:text-slate-50"
-          ></textarea>
+          />
+          {errors.validTill && (
+            <p className="text-red-500 text-sm mt-1">{errors.validTill}</p>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="status"
+            className="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-200"
+          >
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            value={coupon?.status || ""}
+            onChange={handleInputChange}
+            className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-customP2Primary focus:border-customP2Primary dark:border-customP2ForegroundD_400 dark:bg-customP2BackgroundD_darkest sm:text-sm dark:text-slate-50"
+          >
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          {errors.status && (
+            <p className="text-red-500 text-sm mt-1">{errors.status}</p>
+          )}
         </div>
 
         <div className="text-center">

@@ -203,19 +203,32 @@ export const validateAddressForm = (address) => {
 // validateCoupon.js
 export const validateCoupon = (formData) => {
   let errors = {};
+
+  // Validate coupon code
   if (!formData.code) {
     errors.code = "Coupon code is required";
   } else if (formData.code.length < 3) {
     errors.code = "Coupon code must be at least 3 characters long";
   }
+
+  // Validate discount type
   if (!formData.discountType) {
     errors.discountType = "Discount type is required";
   }
+
+  // Validate discount amount
   if (!formData.discountAmount) {
     errors.discountAmount = "Discount amount is required";
   } else if (isNaN(formData.discountAmount) || formData.discountAmount <= 0) {
     errors.discountAmount = "Discount amount must be a positive number";
+  } else if (
+    formData.discountType === "percentage" &&
+    formData.discountAmount > 100
+  ) {
+    errors.discountAmount = "Discount percentage cannot be greater than 100%";
   }
+
+  // Validate minimum purchase amount
   if (
     formData.minPurchaseAmount &&
     (isNaN(formData.minPurchaseAmount) || formData.minPurchaseAmount <= 0)
@@ -223,6 +236,8 @@ export const validateCoupon = (formData) => {
     errors.minPurchaseAmount =
       "Minimum purchase amount must be a positive number";
   }
+
+  // Validate maximum discount amount
   if (formData.maxDiscountAmount) {
     if (isNaN(formData.maxDiscountAmount) || formData.maxDiscountAmount <= 0) {
       errors.maxDiscountAmount =
@@ -236,14 +251,18 @@ export const validateCoupon = (formData) => {
         "Maximum discount amount cannot be less than minimum purchase amount";
     }
   }
+
+  // Validate validFrom date
   if (!formData.validFrom) {
     errors.validFrom = "Valid From date is required";
   }
 
+  // Validate validTill date
   if (!formData.validTill) {
     errors.validTill = "Valid Till date is required";
   }
 
+  // Validate validFrom is earlier than validTill
   if (
     formData.validFrom &&
     formData.validTill &&
@@ -253,6 +272,53 @@ export const validateCoupon = (formData) => {
   }
 
   return errors;
+};
+//validatea couponedit
+export const validateCouponEdit = (coupon) => {
+  if (!coupon) {
+    return "Coupon data is missing.";
+  }
+
+  const requiredFields = [
+    { field: "code", message: "Coupon Code is required." },
+    { field: "discountType", message: "Discount Type is required." },
+    { field: "discountAmount", message: "Discount Amount is required." },
+    { field: "validFrom", message: "Valid From date is required." },
+    { field: "validTill", message: "Valid Till date is required." },
+  ];
+
+  for (const { field, message } of requiredFields) {
+    if (!coupon[field] || coupon[field].toString().trim() === "") {
+      return message;
+    }
+  }
+
+  // Additional validation: Date checks
+  if (new Date(coupon.validFrom) >= new Date(coupon.validTill)) {
+    return "Valid Till date must be later than Valid From date.";
+  }
+
+  // Validate Discount Amount
+  if (coupon.discountType === "flat" && coupon.discountAmount <= 0) {
+    return "Discount Amount must be greater than zero for a flat discount.";
+  }
+
+  // Validate Percentage Discount
+  if (coupon.discountType === "percentage") {
+    if (coupon.discountAmount <= 0 || coupon.discountAmount > 100) {
+      return "Percentage Discount must be between 1 and 100.";
+    }
+  }
+
+  // Validate Maximum Discount Amount if applicable
+  if (
+    coupon.maxDiscountAmount &&
+    coupon.maxDiscountAmount < coupon.discountAmount
+  ) {
+    return "Max Discount Amount must be greater than or equal to Discount Amount.";
+  }
+
+  return null; // No errors
 };
 
 //Validate Discount

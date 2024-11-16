@@ -57,7 +57,7 @@ function CheckoutPage() {
         const selected = data.address.filter(
           (curr, i) => curr.isDefault === true,
         );
-        handleAddressSelect(selected[0]);
+        handleAddressSelect(data.address[0]);
       }
     }
   }, [data, selectedAddress]);
@@ -84,7 +84,8 @@ function CheckoutPage() {
         if (res.data.outofstock) {
           return;
         }
-        if (!selectedAddress) {
+
+        if (!selectedAddress?._id) {
           return setSnackbarData({
             open: true,
             message: "Please select an address before checkout",
@@ -115,16 +116,11 @@ function CheckoutPage() {
   };
 
   const handleAddNewAddress = (newAddress) => {
-    console.log(newAddress);
     const newAddressWithId = { ...newAddress, _id: Date.now().toString() };
     setAddresses([...addresses, newAddressWithId]);
     setSelectedAddress(newAddressWithId);
     refetch();
   };
-  useEffect(() => {
-    console.log(addresses);
-  }, [addresses]);
-
   const handleEditAddress = (address) => {
     setIsModalOpen(true);
     setAddressData(address);
@@ -138,7 +134,7 @@ function CheckoutPage() {
       severity: "success",
     });
   };
-  console.log(items);
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

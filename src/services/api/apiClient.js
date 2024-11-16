@@ -16,7 +16,6 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => {
-    console.log("response was successful");
     if (response.data.token) {
       store.dispatch(setUser({ accessToken: response.data.token }));
     }
@@ -33,7 +32,7 @@ apiClient.interceptors.response.use(
           { withCredentials: true },
         );
         const accessToken = res.data.accessToken;
-        console.log(res.data);
+
         const data = {
           accessToken,
           user: res.data.user,

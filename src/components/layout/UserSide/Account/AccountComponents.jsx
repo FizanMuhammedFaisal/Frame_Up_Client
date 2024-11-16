@@ -89,7 +89,6 @@ const EditProfile = () => {
   });
   useEffect(() => {
     if (data?.userData) {
-      console.log(data);
       setUserData(data.userData);
       setEditedUser(data.userData);
     }
@@ -392,7 +391,7 @@ const ChangePassword = () => {
   };
   const fetchData = async () => {
     const res = await apiClient.get(`/api/users/get-user`);
-    console.log(res.data);
+
     return res.data.UserData;
   };
   const { data } = useQuery({
@@ -600,7 +599,6 @@ function ManageAddress() {
 
   const handleAddAddress = () => {
     setAddressModal(true);
-    console.log("Add address triggered");
   };
   const handleClose = () => {
     setAddressModal(false);
@@ -611,9 +609,6 @@ function ManageAddress() {
     setMode(true);
     setAddress(address);
     setAddressModal(true);
-
-    // Trigger your existing address editing model/modal here
-    console.log("Edit address triggered", address);
   };
 
   if (isLoading) {

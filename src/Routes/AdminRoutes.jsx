@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import Spinner from '../components/common/Animations/Spinner';
+import { ThemeProvider } from '../context/ThemeContext';
 
 const LazyLoad = (Component) => (
   <Suspense fallback={<Spinner center={true} c />}>

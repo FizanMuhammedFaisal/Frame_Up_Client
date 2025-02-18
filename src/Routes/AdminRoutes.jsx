@@ -1,7 +1,8 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import Spinner from '../components/common/Animations/Spinner';
+
 const LazyLoad = (Component) => (
-  <Suspense fallback={<Spinner center={true} />}>
+  <Suspense fallback={<Spinner center={true} c />}>
     {Component}
   </Suspense>
 )

@@ -1,39 +1,72 @@
-import { lazy, Suspense } from 'react';
-import Spinner from '../components/common/Animations/Spinner';
-import { ThemeProvider } from '../context/ThemeContext';
+import { lazy, Suspense } from 'react'
+import Spinner from '../components/common/Animations/Spinner'
+import { ThemeProvider } from '../context/ThemeContext'
 
-const LazyLoad = (Component) => (
-  <Suspense fallback={<Spinner center={true} c />}>
-    {Component}
-  </Suspense>
+const LazyLoad = Component => (
+  <Suspense fallback={<Spinner center={true} c />}>{Component}</Suspense>
 )
 
-
 // Lazy load components
-const AdminLoginPage = lazy(() => import('../pages/AdminSide/AdminLoginPage'));
-const AdminLayout = lazy(() => import('../components/layout/AdminSide/AdminLayout'));
-const AuthenticationRouter = lazy(() => import('../utils/AuthenticationRouter'));
-const ProtectedRoute = lazy(() => import('../utils/ProtectedRoute'));
-const AdminDashboard = lazy(() => import('../pages/AdminSide/Dashboard/AdminDashboard'));
-const AdminProducts = lazy(() => import('../pages/AdminSide/Products/AdminProducts'));
-const AdminUsers = lazy(() => import('../pages/AdminSide/Users/AdminUsers'));
-const DashboardLayout = lazy(() => import('../components/layout/AdminSide/DashBoardLayout'));
-const AdminAddProducts = lazy(() => import('../pages/AdminSide/AdminAddProducts'));
-const AdminOrders = lazy(() => import('../pages/AdminSide/Orders/AdminOrders'));
-const AdminCategory = lazy(() => import('../pages/AdminSide/Categories/AdminCategories'));
-const AdminSalesReport = lazy(() => import('../pages/AdminSide/AdminSalesReport'));
-const AddCategoriesPage = lazy(() => import('../pages/AdminSide/Categories/AddCategoriesPage'));
-const ProductEditPage = lazy(() => import('../pages/AdminSide/Products/ProductEditPage'));
-const AdminArtists = lazy(() => import('../pages/AdminSide/Artists/AdminArtists'));
-const AddArtists = lazy(() => import('../pages/AdminSide/Artists/AddArtists'));
-const OrdersEditPage = lazy(() => import('../pages/AdminSide/Orders/OrdersEditPage'));
-const AdminDiscountPage = lazy(() => import('../pages/AdminSide/Discounts/AdminDiscountPage'));
-const AddDiscountPage = lazy(() => import('../pages/AdminSide/Discounts/AddDiscountPage'));
-const AdminCouponsPage = lazy(() => import('../pages/AdminSide/Coupons/AdminCouponsPage'));
-const AddCouponsPage = lazy(() => import('../pages/AdminSide/Coupons/AddCouponsPage'));
-const ReturnRequestPage = lazy(() => import('../pages/AdminSide/Orders/ReturnRequestPage'));
-const CategoryEdit = lazy(() => import('../pages/AdminSide/Categories/CategoryEdit'));
-const EditCouponPage = lazy(() => import("../pages/AdminSide/Coupons/EditCouponPage"));
+const AdminLoginPage = lazy(() => import('../pages/AdminSide/AdminLoginPage'))
+const AdminLayout = lazy(
+  () => import('../components/layout/AdminSide/AdminLayout')
+)
+const AuthenticationRouter = lazy(() => import('../utils/AuthenticationRouter'))
+const ProtectedRoute = lazy(() => import('../utils/ProtectedRoute'))
+const AdminDashboard = lazy(
+  () => import('../pages/AdminSide/Dashboard/AdminDashboard')
+)
+const AdminProducts = lazy(
+  () => import('../pages/AdminSide/Products/AdminProducts')
+)
+const AdminUsers = lazy(() => import('../pages/AdminSide/Users/AdminUsers'))
+const DashboardLayout = lazy(
+  () => import('../components/layout/AdminSide/DashBoardLayout')
+)
+const AdminAddProducts = lazy(
+  () => import('../pages/AdminSide/AdminAddProducts')
+)
+const AdminOrders = lazy(() => import('../pages/AdminSide/Orders/AdminOrders'))
+const AdminCategory = lazy(
+  () => import('../pages/AdminSide/Categories/AdminCategories')
+)
+const AdminSalesReport = lazy(
+  () => import('../pages/AdminSide/AdminSalesReport')
+)
+const AddCategoriesPage = lazy(
+  () => import('../pages/AdminSide/Categories/AddCategoriesPage')
+)
+const ProductEditPage = lazy(
+  () => import('../pages/AdminSide/Products/ProductEditPage')
+)
+const AdminArtists = lazy(
+  () => import('../pages/AdminSide/Artists/AdminArtists')
+)
+const AddArtists = lazy(() => import('../pages/AdminSide/Artists/AddArtists'))
+const OrdersEditPage = lazy(
+  () => import('../pages/AdminSide/Orders/OrdersEditPage')
+)
+const AdminDiscountPage = lazy(
+  () => import('../pages/AdminSide/Discounts/AdminDiscountPage')
+)
+const AddDiscountPage = lazy(
+  () => import('../pages/AdminSide/Discounts/AddDiscountPage')
+)
+const AdminCouponsPage = lazy(
+  () => import('../pages/AdminSide/Coupons/AdminCouponsPage')
+)
+const AddCouponsPage = lazy(
+  () => import('../pages/AdminSide/Coupons/AddCouponsPage')
+)
+const ReturnRequestPage = lazy(
+  () => import('../pages/AdminSide/Orders/ReturnRequestPage')
+)
+const CategoryEdit = lazy(
+  () => import('../pages/AdminSide/Categories/CategoryEdit')
+)
+const EditCouponPage = lazy(
+  () => import('../pages/AdminSide/Coupons/EditCouponPage')
+)
 
 const AdminRoutes = [
   {
@@ -51,7 +84,9 @@ const AdminRoutes = [
     children: [
       {
         path: '/dashboard',
-        element: LazyLoad(<ProtectedRoute element={<DashboardLayout />} adminRoute={true} />),
+        element: LazyLoad(
+          <ProtectedRoute element={<DashboardLayout />} adminRoute={true} />
+        ),
         children: [
           {
             path: '',
@@ -123,7 +158,8 @@ const AdminRoutes = [
           {
             path: 'coupons/add-coupons',
             element: LazyLoad(<AddCouponsPage />)
-          },{
+          },
+          {
             path: 'coupons/edit/:couponId',
             element: LazyLoad(<EditCouponPage />)
           },
@@ -138,4 +174,4 @@ const AdminRoutes = [
   }
 ]
 
-export default AdminRoutes;
+export default AdminRoutes
